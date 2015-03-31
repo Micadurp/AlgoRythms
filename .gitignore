@@ -26,3 +26,20 @@
 *.exe
 *.out
 *.app
+
+#i unno man
+*.sln
+*.sdf
+*.ilk
+*.pdb
+*.opensdf
+*.idb
+*.db
+*.vcxproj
+*.suo
+*.tlog
+*.lastbuildstate
+*.log
+*.filters
+
+*\Mazes\*

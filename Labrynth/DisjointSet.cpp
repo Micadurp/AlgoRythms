@@ -21,25 +21,23 @@ DisjointSet::DisjointSet(int size, bool useRanks, bool useCompression)
 	if (size <= 0)
 		return;
 
-	this->set = new Node*[this->capacity];
-	for (int i = 0; i < size; i++)
-		this->set[i] = NULL;
+	set = new Node*[this->capacity];
 
 }
 DisjointSet::~DisjointSet()
 {
 	for (int i = 0; i < this->nrOfElements; i++)
-		delete this->set[i];
-	delete[] this->set;
+		delete set[i];
+	delete[] set;
 }
 
 void DisjointSet::Add(int indexID)
 {
 	Expand(1);
 
-	this->set[this->nrOfElements] = new Node(indexID);
-	this->nrOfElements++;
-	this->setCount++;
+	set[nrOfElements] = new Node(indexID);
+	nrOfElements++;
+	setCount++;
 }
 int DisjointSet::AddRange(int size)
 {
@@ -48,14 +46,14 @@ int DisjointSet::AddRange(int size)
 
 	Expand(size);
 
-	int first = this->nrOfElements;
-	int toAdd = this->nrOfElements + size;
+	int first = nrOfElements;
+	int toAdd = nrOfElements + size;
 
-	for (int i = this->nrOfElements; i < toAdd; i++)
+	for (int i = nrOfElements; i < toAdd; i++)
 	{
-		this->set[i] = new Node(i);
-		this->nrOfElements++;
-		this->setCount++;
+		set[i] = new Node(i);
+		nrOfElements++;
+		setCount++;
 	}
 
 	return first;
@@ -70,7 +68,7 @@ void DisjointSet::Union(int a, int b)
 		return;
 
 	if (aLocation != bLocation)
-		Merge(this->set[aLocation]->id, this->set[bLocation]->id);
+		Merge(set[aLocation]->id, set[bLocation]->id);
 }
 int	DisjointSet::Find(int indexID)
 {
@@ -81,16 +79,16 @@ int	DisjointSet::Find(int indexID)
 
 	if (this->usePathCompression)
 	{
-		if (indexID != this->set[indexID]->parent->id)
-			this->set[indexID]->parent = this->set[Find(this->set[indexID]->parent->id)];
-		root = this->set[indexID]->parent->id;
+		if (indexID != set[indexID]->parent->id)
+			set[indexID]->parent = set[Find(set[indexID]->parent->id)];
+		root = set[indexID]->parent->id;
 	}
 	else
 	{
 		int i = indexID;
 
-		while (this->set[i]->parent->id != i)
-			i = this->set[i]->parent->id;
+		while (set[i]->parent->id != i)
+			i = set[i]->parent->id;
 		root = i;
 	}
 
@@ -99,60 +97,57 @@ int	DisjointSet::Find(int indexID)
 
 DisjointSet::Node** DisjointSet::getSetCollection()
 {
-	return this->set;
+	return set;
 }
 int	DisjointSet::getCapacity() const
 {
-	return (int)this->capacity;
+	return capacity;
 }
 int	DisjointSet::getSetCount() const
 {
-	return this->setCount;
+	return setCount;
 }
 
 void DisjointSet::Merge(int a, int b)
 {
-	if (this->setCount == 1)
+	if (setCount == 1)
 		return;
 
-	if (this->useRank)
+	if (useRank)
 	{
 		// A -> B
-		if (this->set[a]->rank < this->set[b]->rank)
-			this->set[a]->parent = this->set[b];
+		if (set[a]->rank < set[b]->rank)
+			set[a]->parent = set[b];
 		// B -> A
 		else
 		{
-			this->set[b]->parent = this->set[a];
+			set[b]->parent = set[a];
 
 			//Increment rank if equal
-			if (this->set[a]->rank == this->set[b]->rank)
-				this->set[a]->rank++;
+			if (set[a]->rank == set[b]->rank)
+				set[a]->rank++;
 		}
 	}
 	else
 	{
-		this->set[a]->parent = this->set[b];
+		set[a]->parent = set[b];
 	}
-	this->setCount--;
+	setCount--;
 }
 
 void DisjointSet::Expand(int toAdd)
 {
-	int cap = this->nrOfElements + toAdd;
+	int cap = nrOfElements + toAdd;
 
-	if (cap < this->capacity)
+	if (cap < capacity)
 		return;
 
-	this->capacity = cap;
-	Node** temp = new Node*[this->capacity];
+	capacity = cap;
+	Node** temp = new Node*[capacity];
 
-	for (int i = 0; i< this->nrOfElements; i++)
-		temp[i] = this->set[i];
+	for (int i = 0; i< nrOfElements; i++)
+		temp[i] = set[i];
 
-	for (int i = this->nrOfElements; i < this->capacity; i++)
-		temp[i] = NULL;
-
-	delete[] this->set;
-	this->set = temp;
+	delete[] set;
+	set = temp;
 }
